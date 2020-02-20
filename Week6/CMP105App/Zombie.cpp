@@ -1,11 +1,14 @@
 #include "Zombie.h"
-#include "Framework/Input.h"
 #include "Framework/Vector.h"
 Zombie::Zombie()
 {
-
+	/*Physics related initialisations*/
 	scale = 200;
 	gravity = sf::Vector2f(0, 9.8) * scale;
+	jumpVector = sf::Vector2f(0, -4.0f) * scale;
+	isJumping = false;
+
+	/*Animations*/
 	walk.addFrame(sf::IntRect(0, 0, 55, 108));
 	walk.addFrame(sf::IntRect(55, 0, 55, 108));
 	walk.addFrame(sf::IntRect(110, 0, 55, 108));
@@ -18,14 +21,33 @@ Zombie::Zombie()
 }
 void Zombie::update(float dt)
 {
-	pos = velocity*dt + (0.5f*gravity*dt*dt);
-	velocity += gravity * dt;
+	pos = initialVelocity*dt + (0.5f*gravity*dt*dt);
+	initialVelocity += gravity * dt;
 	setPosition(getPosition() + pos);
 	if (getPosition().y >= 500)
 	{
+		isJumping = false;
 		setPosition(getPosition().x, 500);
-		velocity = sf::Vector2f(0, 0);
+		initialVelocity = sf::Vector2f(0, 0);
 	}
 	walk.animate(dt);
 	setTextureRect(walk.getCurrentFrame());
+}
+void Zombie::handleInput(float dt, Input* in)
+{
+	input = in;
+	if (in->isKeyDown(sf::Keyboard::Space) && getPosition() == sf::Vector2f(getPosition().x, 500))
+	{
+		if (!isJumping)
+		{
+			initialVelocity = jumpVector;
+			isJumping = true;
+		}
+	}
+	if (in->isMouseLDown())
+	{
+		sf::Vector2f mousePos = sf::Vector2f(in->getMouseX(), in->getMouseY());
+		setPosition(mousePos);
+
+	}
 }

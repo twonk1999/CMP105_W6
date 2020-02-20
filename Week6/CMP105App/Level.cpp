@@ -26,6 +26,7 @@ void Level::handleInput(float dt)
 // Update game objects
 void Level::update(float dt)
 {
+	zombie.handleInput(dt, input);
 	zombie.update(dt);
 }
 
