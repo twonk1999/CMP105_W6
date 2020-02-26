@@ -1,5 +1,6 @@
 #include "Zombie.h"
 #include "Framework/Vector.h"
+#include <iostream>
 Zombie::Zombie()
 {
 	/*Physics related initialisations*/
@@ -21,14 +22,19 @@ Zombie::Zombie()
 }
 void Zombie::update(float dt)
 {
-	pos = initialVelocity*dt + (0.5f*gravity*dt*dt);
+	pos = initialVelocity*dt+(0.5f*gravity*dt*dt);
 	initialVelocity += gravity * dt;
 	setPosition(getPosition() + pos);
 	if (getPosition().y >= 500)
 	{
 		isJumping = false;
 		setPosition(getPosition().x, 500);
-		initialVelocity = sf::Vector2f(0, 0);
+		initialVelocity.y = -initialVelocity.y*0.90;
+	}
+	if (getPosition().y <= 0)
+	{
+		setPosition(getPosition().x, 0);
+		initialVelocity.y = -initialVelocity.y*0.9;
 	}
 	walk.animate(dt);
 	setTextureRect(walk.getCurrentFrame());
@@ -46,8 +52,21 @@ void Zombie::handleInput(float dt, Input* in)
 	}
 	if (in->isMouseLDown())
 	{
-		sf::Vector2f mousePos = sf::Vector2f(in->getMouseX(), in->getMouseY());
-		setPosition(mousePos);
-
+		if (mouseIsClicked == false)
+		{
+			mouseClickPos = sf::Vector2f(in->getMouseX(), in->getMouseY());
+			mouseIsClicked = true;
+			setPosition(mouseClickPos);
+		}
+		else if (mouseIsClicked == true)
+		{
+			currentMousePos = sf::Vector2f(in->getMouseX(), in->getMouseY());
+		}
+	}
+	if (!in->isMouseLDown() && mouseIsClicked)
+	{
+		mouseIsClicked = false;
+		sf::Vector2f direction = Vector::normalise(currentMousePos - mouseClickPos);
+		initialVelocity = Vector::magnitude(currentMousePos - mouseClickPos) * direction * (scale/20);
 	}
 }

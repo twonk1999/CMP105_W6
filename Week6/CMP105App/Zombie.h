@@ -10,6 +10,8 @@ public:
 	sf::Vector2f initialVelocity = sf::Vector2f(0, 0);
 	sf::Vector2f pos;
 	sf::Vector2f jumpVector = sf::Vector2f(0, 0);
+	sf::Vector2f mouseClickPos;
+	sf::Vector2f currentMousePos;
 
 	Input* input;
 
@@ -18,6 +20,7 @@ public:
 	bool isJumping = false;
 	void update(float dt) override;
 	void handleInput(float dt, Input* in);
+	bool mouseIsClicked = false;
 protected:
 	Animation walk;
 };

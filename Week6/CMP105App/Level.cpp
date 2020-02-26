@@ -26,6 +26,16 @@ void Level::handleInput(float dt)
 // Update game objects
 void Level::update(float dt)
 {
+	if (zombie.getPosition().x >= window->getSize().x)
+	{
+		zombie.setPosition(window->getSize().x, zombie.getPosition().y);
+		zombie.initialVelocity.x = -zombie.initialVelocity.x*0.5;
+	}
+	if (zombie.getPosition().x <= window->getSize().x - window->getSize().x)
+	{
+		zombie.setPosition(window->getSize().x - window->getSize().x, zombie.getPosition().y);
+		zombie.initialVelocity.x = -zombie.initialVelocity.x*0.5;
+	}
 	zombie.handleInput(dt, input);
 	zombie.update(dt);
 }
